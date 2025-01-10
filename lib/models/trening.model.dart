@@ -1,35 +1,31 @@
-import 'exercise.model.dart';
-
 class Trening {
-  String title;
-  String description;
-  DateTime date;
-  List<Exercise> exercises;
+  final int? id;
+  final String name;
+  final String description;
+  final String date;
 
   Trening({
-    required this.title,
+    this.id,
+    required this.name,
     required this.description,
     required this.date,
-    this.exercises = const [],
   });
 
-  // Konwersja obiektu Trening na Map (dla bazy danych)
-  Map<String, dynamic> toMap() {
-    return {
-      'title': title,
-      'description': description,
-      'date': date.toIso8601String(),
-      'exercises': exercises.map((e) => e.toMap()).toList(),
-    };
-  }
-
-  // Tworzenie obiektu Trening z Map (dla pobierania z bazy)
   factory Trening.fromMap(Map<String, dynamic> map) {
     return Trening(
-      title: map['title'],
-      description: map['description'],
-      date: DateTime.parse(map['date']),
-      exercises: List<Exercise>.from(map['exercises'].map((e) => Exercise.fromMap(e))),
+      id: map['id'],
+      name: map['name'] ?? 'Brak nazwy',
+      description: map['description'] ?? 'Brak opisu',
+      date: map['date'] ?? '0000-00-00',
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'date': date,
+    };
   }
 }

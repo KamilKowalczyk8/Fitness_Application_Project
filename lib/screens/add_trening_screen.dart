@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:fitness1945/services/database_service.dart';
+
 
 class AddTreningScreen extends StatefulWidget {
   @override
@@ -13,46 +15,47 @@ class _AddTreningScreenState extends State<AddTreningScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Dodaj Trening'),
-      ),
+      appBar: AppBar(title: Text('Dodaj Trening')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextFormField(
-                decoration: InputDecoration(labelText: 'Tytuł Treningu'),
+                decoration: InputDecoration(labelText: 'Tytuł'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Proszę wpisać tytuł';
                   }
                   return null;
                 },
-                onSaved: (value) {
-                  _title = value!;
-                },
+                onSaved: (value) => _title = value!,
               ),
               TextFormField(
                 decoration: InputDecoration(labelText: 'Opis'),
-                maxLines: 3,
-                onSaved: (value) {
-                  _description = value!;
-                },
+                onSaved: (value) => _description = value ?? '',
               ),
               SizedBox(height: 20),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      _formKey.currentState!.save();
-                      Navigator.pop(context, {'title': _title, 'description': _description});
-                    }
-                  },
-                  child: Text('Dodaj Trening'),
-                ),
+              ElevatedButton(
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+
+                    final db = await DatabaseService.instance.database;
+                    await db.insert(
+                      'trening',
+                      {
+                        'name': _title,
+                        'description': _description,
+                        'date': DateTime.now().toIso8601String(),
+                      },
+                    );
+
+                    Navigator.pop(context, true); // Powrót z wynikiem true
+                  }
+                },
+                child: Text('Dodaj'),
               ),
             ],
           ),

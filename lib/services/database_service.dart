@@ -13,6 +13,7 @@ class DatabaseService {
     return _database!;
   }
 
+
   Future<Database> _initDB(String filePath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
@@ -26,13 +27,13 @@ class DatabaseService {
 
   Future _createDB(Database db, int version) async {
     await db.execute('''
-      CREATE TABLE trening (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
-        description TEXT
-      )
-    '''
-    );
+    CREATE TABLE trening (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT,
+      description TEXT,
+      date TEXT
+    )
+  ''');
 
     await db.execute('''
      CREATE TABLE excersise ( 
@@ -44,6 +45,6 @@ class DatabaseService {
     FOREIGN KEY (trening_id) REFERENCES trening (id) 
   )
     ''');
-    print("Baza danych stworzona i tabele: trening, excersise");
+    print("Baza danych stworzona: tabele 'trening', 'excersise'");
   }
 }

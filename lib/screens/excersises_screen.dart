@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fitness1945/screens/exercise_tutorial_screen.dart'; // Poprawny import
 import 'package:fitness1945/services/database_service.dart'; // Importuj usługę bazy danych
 import 'package:fitness1945/models/exercise.model.dart'; // Importuj model ćwiczenia
 import 'add_excersise_screen.dart'; // Importuj ekran dodawania ćwiczenia
@@ -51,7 +52,7 @@ class _ExcersisesScreenState extends State<ExcersisesScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Potwierdzenie usunięcia'),
+          title: Text('Usunięcie cwiczenia'),
           content: Text('Czy na pewno chcesz usunąć to ćwiczenie?'),
           actions: <Widget>[
             TextButton(
@@ -138,17 +139,48 @@ class _ExcersisesScreenState extends State<ExcersisesScreen> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => AddExcersiseScreen(treningId: widget.treningId),
+      floatingActionButton: Stack(
+        children: [
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ExerciseTutorialScreen(),
+                      ),
+                    );
+                  },
+                  child: Text('Poradnik do ćwiczeń'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFFADD8E6),
+
+                  ),
+                ),
+                // FloatingActionButton
+                FloatingActionButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddExcersiseScreen(treningId: widget.treningId),
+                      ),
+                    );
+                  },
+                  child: Icon(Icons.add),
+                  backgroundColor: Color(0xFFEADDFF),
+                ),
+              ],
             ),
-          );
-        },
-        child: Icon(Icons.add),
+          ),
+        ],
       ),
+
     );
   }
 }
