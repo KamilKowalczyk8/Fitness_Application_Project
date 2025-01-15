@@ -1,38 +1,43 @@
-
 class Exercise {
   final int? id;
+  final int trainingId;
   final String name;
   final int sets;
   final int reps;
-  final int trainingId;
+  final double weight;
+  final String weightUnit;
 
   Exercise({
     this.id,
+    required this.trainingId,
     required this.name,
     required this.sets,
     required this.reps,
-    required this.trainingId,
+    required this.weight,
+    required this.weightUnit,
   });
 
-  // Konwersja obiektu Exercise na Map (dla bazy danych)
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'training_id': trainingId,
       'name': name,
       'sets': sets,
       'reps': reps,
-      'trening_id': trainingId,
+      'weight': weight,
+      'weight_unit': weightUnit,
     };
   }
 
-  // Tworzenie obiektu Exercise z Map (dla pobierania z bazy)
   factory Exercise.fromMap(Map<String, dynamic> map) {
     return Exercise(
       id: map['id'],
+      trainingId: map['training_id'],
       name: map['name'],
       sets: map['sets'],
       reps: map['reps'],
-      trainingId: map['trening_id'],
+      weight: map['weight'],
+      weightUnit: map['weight_unit'],
     );
   }
 }

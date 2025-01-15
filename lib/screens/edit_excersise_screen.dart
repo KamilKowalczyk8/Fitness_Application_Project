@@ -2,19 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:fitness1945/services/database_service.dart';
 import 'package:fitness1945/models/exercise.model.dart';
 
-class EditExcersiseScreen extends StatefulWidget {
+class EditExerciseScreen extends StatefulWidget {
   final Exercise exercise;
 
-  EditExcersiseScreen({required this.exercise});
+  EditExerciseScreen({required this.exercise});
 
   @override
-  _EditExcersiseScreenState createState() => _EditExcersiseScreenState();
+  _EditExerciseScreenState createState() => _EditExerciseScreenState();
 }
 
-class _EditExcersiseScreenState extends State<EditExcersiseScreen> {
+class _EditExerciseScreenState extends State<EditExerciseScreen> {
   late TextEditingController _nameController;
   late TextEditingController _setsController;
   late TextEditingController _repsController;
+  late TextEditingController _weightController; // Dodajemy kontroler dla wagi
 
   @override
   void initState() {
@@ -22,6 +23,7 @@ class _EditExcersiseScreenState extends State<EditExcersiseScreen> {
     _nameController = TextEditingController(text: widget.exercise.name);
     _setsController = TextEditingController(text: widget.exercise.sets.toString());
     _repsController = TextEditingController(text: widget.exercise.reps.toString());
+    _weightController = TextEditingController(text: widget.exercise.weight.toString()); // Inicjalizujemy kontroler dla wagi
   }
 
   @override
@@ -29,6 +31,7 @@ class _EditExcersiseScreenState extends State<EditExcersiseScreen> {
     _nameController.dispose();
     _setsController.dispose();
     _repsController.dispose();
+    _weightController.dispose(); // Zwalniamy kontroler dla wagi
     super.dispose();
   }
 
@@ -39,13 +42,15 @@ class _EditExcersiseScreenState extends State<EditExcersiseScreen> {
       name: _nameController.text,
       sets: int.parse(_setsController.text),
       reps: int.parse(_repsController.text),
+      weight: double.parse(_weightController.text), // Dodajemy wagę
       trainingId: widget.exercise.trainingId,
+      weightUnit: widget.exercise.weightUnit, // Dodajemy jednostkę wagi
     );
 
     final db = await DatabaseService.instance.database;
 
     await db.update(
-      'excersise',
+      'exercise',
       updatedExercise.toMap(),
       where: 'id = ?',
       whereArgs: [updatedExercise.id],
@@ -75,6 +80,11 @@ class _EditExcersiseScreenState extends State<EditExcersiseScreen> {
             TextField(
               controller: _repsController,
               decoration: InputDecoration(labelText: 'Ilość powtórzeń'),
+              keyboardType: TextInputType.number,
+            ),
+            TextField(
+              controller: _weightController, // Pole dla wagi
+              decoration: InputDecoration(labelText: 'Waga'),
               keyboardType: TextInputType.number,
             ),
             SizedBox(height: 20),

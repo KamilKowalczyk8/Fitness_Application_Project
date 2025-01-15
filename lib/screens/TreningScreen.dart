@@ -86,12 +86,7 @@ class _TreningScreenState extends State<TreningScreen> {
                     IconButton(
                       icon: Icon(Icons.arrow_forward),
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ExcersisesScreen(treningId: trening.id!),
-                          ),
-                        );
+                        Navigator.push( context, MaterialPageRoute( builder: (context) => ExcersisesScreen(trainingId: trening.id!), ), );
                       },
                     ),
                     IconButton(

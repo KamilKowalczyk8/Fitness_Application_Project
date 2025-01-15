@@ -3,12 +3,14 @@ import 'package:fitness1945/screens/exercise_tutorial_screen.dart'; // Poprawny 
 import 'package:fitness1945/services/database_service.dart'; // Importuj usługę bazy danych
 import 'package:fitness1945/models/exercise.model.dart'; // Importuj model ćwiczenia
 import 'add_excersise_screen.dart'; // Importuj ekran dodawania ćwiczenia
+import 'package:fitness1945/screens/add_excersise_screen.dart';
+
 import 'edit_excersise_screen.dart'; // Importuj ekran edytowania ćwiczenia
 
 class ExcersisesScreen extends StatefulWidget {
-  final int treningId;
+  final int trainingId;
 
-  ExcersisesScreen({required this.treningId});
+  ExcersisesScreen({required this.trainingId});
 
   @override
   _ExcersisesScreenState createState() => _ExcersisesScreenState();
@@ -26,9 +28,9 @@ class _ExcersisesScreenState extends State<ExcersisesScreen> {
   Future<List<Exercise>> _loadExercises() async {
     final db = await DatabaseService.instance.database;
     final List<Map<String, dynamic>> maps = await db.query(
-      'excersise',
-      where: 'trening_id = ?',
-      whereArgs: [widget.treningId],
+      'exercise',
+      where: 'training_id = ?',
+      whereArgs: [widget.trainingId],
     );
 
     return List.generate(maps.length, (i) {
@@ -36,36 +38,34 @@ class _ExcersisesScreenState extends State<ExcersisesScreen> {
     });
   }
 
-  // Funkcja edytowania ćwiczenia
   void _editExercise(Exercise exercise) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => EditExcersiseScreen(exercise: exercise),
+        builder: (context) => EditExerciseScreen(exercise: exercise),
       ),
     );
   }
 
-  // Funkcja usuwania ćwiczenia z bazy danych
   void _confirmDeleteExercise(Exercise exercise) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Usunięcie cwiczenia'),
+          title: Text('Usunięcie ćwiczenia'),
           content: Text('Czy na pewno chcesz usunąć to ćwiczenie?'),
           actions: <Widget>[
             TextButton(
               child: Text('Anuluj'),
               onPressed: () {
-                Navigator.of(context).pop(); // Zamknięcie okna dialogowego
+                Navigator.of(context).pop();
               },
             ),
             TextButton(
               child: Text('Usuń'),
               onPressed: () {
                 _deleteExercise(exercise);
-                Navigator.of(context).pop(); // Zamknięcie okna dialogowego
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -74,21 +74,33 @@ class _ExcersisesScreenState extends State<ExcersisesScreen> {
     );
   }
 
-  // Funkcja usuwania ćwiczenia z bazy danych
   Future<void> _deleteExercise(Exercise exercise) async {
     final db = await DatabaseService.instance.database;
 
-    // Usunięcie ćwiczenia z bazy danych
     await db.delete(
-      'excersise',
+      'exercise',
       where: 'id = ?',
       whereArgs: [exercise.id],
     );
 
-    // Odświeżenie listy ćwiczeń po usunięciu
     setState(() {
       _exercises = _loadExercises();
     });
+  }
+
+  void _addExercise() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddExerciseScreen(trainingId: widget.trainingId),
+      ),
+    );
+
+    if (result == true) {
+      setState(() {
+        _exercises = _loadExercises();
+      });
+    }
   }
 
   @override
@@ -114,22 +126,20 @@ class _ExcersisesScreenState extends State<ExcersisesScreen> {
               final exercise = exercises[index];
               return ListTile(
                 title: Text(exercise.name),
-                subtitle: Text('${exercise.sets} serie, ${exercise.reps} powtórzeń'),
+                subtitle: Text('${exercise.sets} serie, ${exercise.reps} powtórzeń, ${exercise.weight} ${exercise.weightUnit}'),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Przycisk edytowania
                     IconButton(
                       icon: Icon(Icons.edit),
                       onPressed: () {
-                        _editExercise(exercise); // Przekierowanie do edycji
+                        _editExercise(exercise);
                       },
                     ),
-                    // Przycisk usuwania
                     IconButton(
                       icon: Icon(Icons.delete),
                       onPressed: () {
-                        _confirmDeleteExercise(exercise); // Potwierdzenie usunięcia
+                        _confirmDeleteExercise(exercise);
                       },
                     ),
                   ],
@@ -146,7 +156,6 @@ class _ExcersisesScreenState extends State<ExcersisesScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-
                 ElevatedButton(
                   onPressed: () {
                     Navigator.push(
@@ -159,19 +168,10 @@ class _ExcersisesScreenState extends State<ExcersisesScreen> {
                   child: Text('Poradnik do ćwiczeń'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFFADD8E6),
-
                   ),
                 ),
-                // FloatingActionButton
                 FloatingActionButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AddExcersiseScreen(treningId: widget.treningId),
-                      ),
-                    );
-                  },
+                  onPressed: _addExercise,
                   child: Icon(Icons.add),
                   backgroundColor: Color(0xFFEADDFF),
                 ),
@@ -180,7 +180,6 @@ class _ExcersisesScreenState extends State<ExcersisesScreen> {
           ),
         ],
       ),
-
     );
   }
 }

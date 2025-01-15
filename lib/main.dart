@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'screens/HomeScreen.dart';
+import 'LoadingScreen.dart';
+
 
 void main() {
   runApp(FitnessApp());
@@ -13,7 +15,7 @@ class FitnessApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomeScreen(),
+      home: LoadingScreen(),
     );
   }
 }
