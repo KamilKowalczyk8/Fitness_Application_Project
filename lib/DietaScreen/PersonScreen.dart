@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'services_dieta/database_helper_dieta.dart'; // Importuj DatabaseHelper
+import 'services_dieta/database_helper_dieta.dart'; // Importuj DatabaseHelperDieta
 
 class PersonScreen extends StatefulWidget {
-  final VoidCallback onDataUpdated;
+  final Function(double, double, double, double) onDataUpdated;
 
   PersonScreen({required this.onDataUpdated});
 
@@ -46,6 +46,47 @@ class _PersonScreenState extends State<PersonScreen> {
         personId = person['id'];
       });
     }
+  }
+
+  void _calculateAndUpdateData() {
+    double heightValue = double.parse(height!);
+    double weightValue = double.parse(weight!);
+
+    double bmr;
+    if (gender == 'male') {
+      bmr = 88.362 + (13.397 * weightValue) + (4.799 * heightValue) - (5.677 * 30);
+    } else {
+      bmr = 447.593 + (9.247 * weightValue) + (3.098 * heightValue) - (4.330 * 30);
+    }
+
+    double activityMultiplier;
+    switch (activityLevel) {
+      case 0:
+        activityMultiplier = 1.2;
+        break;
+      case 1:
+        activityMultiplier = 1.375;
+        break;
+      case 2:
+        activityMultiplier = 1.55;
+        break;
+      case 3:
+        activityMultiplier = 1.725;
+        break;
+      case 4:
+        activityMultiplier = 1.9;
+        break;
+      default:
+        activityMultiplier = 1.2;
+        break;
+    }
+
+    double calorieReq = bmr * activityMultiplier;
+    double protein = (calorieReq * 0.20) / 4;
+    double carbs = (calorieReq * 0.50) / 4;
+    double fats = (calorieReq * 0.30) / 9;
+
+    widget.onDataUpdated(calorieReq, protein, carbs, fats);
   }
 
   @override
@@ -160,7 +201,7 @@ class _PersonScreenState extends State<PersonScreen> {
                       } else {
                         await DatabaseHelperDieta.instance.insertPerson(person);
                       }
-                      widget.onDataUpdated();
+                      _calculateAndUpdateData();
 
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Dane zapisane')),
