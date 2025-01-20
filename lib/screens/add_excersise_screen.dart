@@ -84,7 +84,18 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
                 // Powrót do poprzedniego ekranu z wynikiem true
                 Navigator.pop(context, true);
               },
-              child: Text('Dodaj'),
+              child: Text(
+                'Dodaj',
+                style: TextStyle(
+                  fontSize: 20, // Większy rozmiar czcionki
+                  fontWeight: FontWeight.bold, // Pogrubienie tekstu
+                  color: Colors.white, // Kolor napisu na biało
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.greenAccent,
+                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20), // Powiększenie przycisku
+              ),
             )
           ],
         ),

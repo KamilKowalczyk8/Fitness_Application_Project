@@ -13,11 +13,16 @@ class AddMealScreen extends StatefulWidget {
 }
 
 class _AddMealScreenState extends State<AddMealScreen> {
-  double calorieRequirement = 2000.0; // Przykładowe wartości
-  double protein = 150.0; // Przykładowe wartości
-  double carbs = 250.0; // Przykładowe wartości
-  double fats = 70.0; // Przykładowe wartości
+  double calorieRequirement = 2000.0;
+  double protein = 150.0;
+  double carbs = 250.0;
+  double fats = 70.0;
   List<Map<String, dynamic>> meals = [];
+
+  double consumedCalories = 0.0;
+  double consumedProtein = 0.0;
+  double consumedCarbs = 0.0;
+  double consumedFats = 0.0;
 
   @override
   void initState() {
@@ -44,7 +49,32 @@ class _AddMealScreenState extends State<AddMealScreen> {
     final meals = await DatabaseHelperDay.instance.getMealsForDay(widget.date);
     setState(() {
       this.meals = meals;
+
+      consumedCalories = 0.0;
+      consumedProtein = 0.0;
+      consumedCarbs = 0.0;
+      consumedFats = 0.0;
+
+      for (var meal in meals) {
+        consumedCalories += meal['calories'];
+        consumedProtein += meal['protein'];
+        consumedCarbs += meal['carbs'];
+        consumedFats += meal['fat'];
+      }
+
+      consumedCalories = _formatValue(consumedCalories);
+      consumedProtein = _formatValue(consumedProtein);
+      consumedCarbs = _formatValue(consumedCarbs);
+      consumedFats = _formatValue(consumedFats);
     });
+  }
+
+  double _formatValue(double value) {
+    return value % 1 == 0 ? value.toInt().toDouble() : value;
+  }
+
+  String _formatDisplayValue(double value) {
+    return value % 1 == 0 ? value.toInt().toString() : value.toStringAsFixed(1);
   }
 
   void _navigateToMealForm() async {
@@ -63,19 +93,10 @@ class _AddMealScreenState extends State<AddMealScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Dodaj Posiłek'),
-      ),
+      appBar: AppBar(),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'Dodaj posiłki: ${widget.date.substring(0, 10)}',
-              style: TextStyle(fontSize: 18),
-            ),
-          ),
           Expanded(
             child: ListView.builder(
               itemCount: meals.length + 1, // Zwiększ liczbę elementów o 1
@@ -116,62 +137,47 @@ class _AddMealScreenState extends State<AddMealScreen> {
           Container(
             padding: EdgeInsets.all(16.0),
             color: Colors.blueAccent,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+            child: Column(
               children: [
-                Column(
-                  children: [
-                    Text(
-                      'Kalorie',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      '${calorieRequirement.toInt()} kcal',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Text(
-                      'Białko',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      '${protein.toInt()} g',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Text(
-                      'Węglowodany',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      '${carbs.toInt()} g',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Text(
-                      'Tłuszcze',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      '${fats.toInt()} g',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
+                _buildNutrientRow('Kalorie', consumedCalories, calorieRequirement),
+                SizedBox(height: 16.0),
+                _buildNutrientRow('Białko', consumedProtein, protein),
+                SizedBox(height: 16.0),
+                _buildNutrientRow('Węglowodany', consumedCarbs, carbs),
+                SizedBox(height: 16.0),
+                _buildNutrientRow('Tłuszcze', consumedFats, fats),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildNutrientRow(String label, double consumed, double requirement) {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              label,
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              '${_formatDisplayValue(consumed)}/${requirement.toInt()}',
+              style: TextStyle(color: Colors.white),
+            ),
+          ],
+        ),
+        SizedBox(height: 8.0),
+        LinearProgressIndicator(
+          value: consumed / requirement,
+          backgroundColor: Colors.white,
+          color: consumed <= requirement ? Colors.green : Colors.red,
+          minHeight: 10.0,
+        ),
+      ],
     );
   }
 }

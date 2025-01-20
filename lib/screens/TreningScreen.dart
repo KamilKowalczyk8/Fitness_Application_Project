@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'add_trening_screen.dart';
-import 'excersises_screen.dart';
+import 'package:fitness1945/screens/add_trening_screen.dart';
+import 'package:fitness1945/screens/excersises_screen.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:fitness1945/models/trening.model.dart';
 import 'package:fitness1945/services/database_service.dart';
-import 'package:path/path.dart'; // Dodaj ten import
+import 'package:path/path.dart' as p; // Użyj aliasu dla importu path
 import 'package:intl/intl.dart';  // Dodaj import intl
 
 class TreningScreen extends StatefulWidget {
@@ -23,7 +23,7 @@ class _TreningScreenState extends State<TreningScreen> {
 
   Future<void> deleteDatabaseFile() async {
     final dbPath = await getDatabasesPath();
-    final path = join(dbPath, 'fitness.db'); // Użyj funkcji join
+    final path = p.join(dbPath, 'fitness.db'); // Użyj aliasu p.join
     await deleteDatabase(path);
   }
 
@@ -46,11 +46,37 @@ class _TreningScreenState extends State<TreningScreen> {
     );
     _loadTreningi(); // Odśwież listę po usunięciu
   }
+
   // Formatowanie daty (godzina: minuta)
   String _formatDate(String date) {
     final dateTime = DateTime.parse(date);
     final format = DateFormat('yyyy-MM-dd   HH:mm'); // Możesz dostosować format
     return format.format(dateTime);
+  }
+
+  void _confirmDeleteTrening(int id) {
+    showDialog(
+      context: context, // Poprawne użycie BuildContext
+      builder: (context) => AlertDialog(
+        title: Text('Usunięcie treningu'),
+        content: Text('Czy na pewno chcesz usunąć ten trening?'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Zamknij okno dialogowe
+            },
+            child: Text('Anuluj'),
+          ),
+          TextButton(
+            onPressed: () {
+              _deleteTrening(id); // Usuń trening
+              Navigator.pop(context); // Zamknij okno dialogowe
+            },
+            child: Text('Usuń'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -71,53 +97,37 @@ class _TreningScreenState extends State<TreningScreen> {
             itemCount: treningi.length,
             itemBuilder: (context, index) {
               final trening = treningi[index];
-              return ListTile(
-                title: Text(trening.name),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(trening.description),
-                    Text('Utworzono: ${_formatDate(trening.date)}'), // Formatowanie daty
-                  ],
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.arrow_forward),
-                      onPressed: () {
-                        Navigator.push( context, MaterialPageRoute( builder: (context) => ExcersisesScreen(trainingId: trening.id!), ), );
-                      },
+              return Card(
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ExcersisesScreen(trainingId: trening.id!)),
+                    );
+                  },
+                  child: ListTile(
+                    title: Text(trening.name),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(trening.description),
+                        Text('Utworzono: ${_formatDate(trening.date)}'), // Formatowanie daty
+                      ],
                     ),
-                    IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () {
-                        // Potwierdzenie usunięcia
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: Text('Usunięcie treningu'),
-                            content: Text('Czy na pewno chcesz usunąć ten trening?'),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context); // Zamknij okno dialogowe
-                                },
-                                child: Text('Anuluj'),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  _deleteTrening(trening.id!); // Usuń trening
-                                  Navigator.pop(context); // Zamknij okno dialogowe
-                                },
-                                child: Text('Usuń'),
-                              ),
-                            ],
-                          ),
-                        );
+                    trailing: PopupMenuButton<String>(
+                      onSelected: (String value) {
+                        if (value == 'delete') {
+                          _confirmDeleteTrening(trening.id!);
+                        }
                       },
+                      itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                        PopupMenuItem<String>(
+                          value: 'delete',
+                          child: Text('Usuń'),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               );
             },
@@ -136,7 +146,11 @@ class _TreningScreenState extends State<TreningScreen> {
             });
           }
         },
-        child: Icon(Icons.add),
+        child: Icon(
+          Icons.add,
+          color: Colors.white, // Kolor plusa na biało
+        ),
+        backgroundColor: Colors.greenAccent, // Kolor tła
       ),
     );
   }

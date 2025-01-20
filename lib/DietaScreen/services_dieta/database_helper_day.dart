@@ -26,7 +26,11 @@ class DatabaseHelperDay {
     await db.execute('''
     CREATE TABLE days (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
-      date TEXT NOT NULL
+      date TEXT NOT NULL,
+      calorieRequirement REAL,
+      protein REAL,
+      carbs REAL,
+      fats REAL
     )
     ''');
 
@@ -68,6 +72,13 @@ class DatabaseHelperDay {
       );
     }
     return [];
+  }
+
+  Future<void> updateExistingRecords() async {
+    final db = await instance.database;
+    await db.rawUpdate('''
+    UPDATE days SET calorieRequirement = 2000.0, protein = 150.0, carbs = 250.0, fats = 70.0 WHERE calorieRequirement IS NULL;
+    ''');
   }
 
   Future close() async {

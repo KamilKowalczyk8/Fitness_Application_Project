@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'PersonScreen.dart'; // Importuj PersonScreen
-import 'services_dieta/database_helper_dieta.dart'; // Importuj DatabaseHelperDieta
-import 'services_dieta/database_helper_day.dart'; // Importuj DatabaseHelperDay
-import 'AddMealScreen.dart'; // Importuj ekran dodawania posiłków
-import 'package:intl/intl.dart'; // Importuj pakiet intl do formatowania daty
+import 'PersonScreen.dart';
+import 'services_dieta/database_helper_dieta.dart';
+import 'services_dieta/database_helper_day.dart';
+import 'AddMealScreen.dart';
+import 'package:intl/intl.dart';
 
 class DietaScreen extends StatefulWidget {
   @override
@@ -75,11 +75,37 @@ class _DietaScreenState extends State<DietaScreen> {
     return DateFormat('dd-MM-yyyy').format(dateTime);
   }
 
+  String _formatValue(double value) {
+    return value.toStringAsFixed(1); // Formatuje wartość do jednego miejsca po przecinku
+  }
+
+  Future<Map<String, double>> _fetchMealsDataForDay(String date) async {
+    final meals = await DatabaseHelperDay.instance.getMealsForDay(date);
+    double consumedCalories = 0.0;
+    double consumedProtein = 0.0;
+    double consumedCarbs = 0.0;
+    double consumedFats = 0.0;
+
+    for (var meal in meals) {
+      consumedCalories += meal['calories'];
+      consumedProtein += meal['protein'];
+      consumedCarbs += meal['carbs'];
+      consumedFats += meal['fat'];
+    }
+
+    return {
+      'calories': consumedCalories,
+      'protein': consumedProtein,
+      'carbs': consumedCarbs,
+      'fats': consumedFats,
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Dieta'),
+        title: Text('Diety'),
         centerTitle: true, // Wyśrodkowanie tytułu
         actions: [
           Padding(
@@ -120,47 +146,79 @@ class _DietaScreenState extends State<DietaScreen> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: _addDay,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueAccent, // Kolor tła
-                foregroundColor: Colors.white, // Kolor tekstu
-              ),
-              child: Text('Dodaj dzień'),
-            ),
-          ),
           Expanded(
             child: ListView.builder(
-              itemCount: days.length,
+              itemCount: days.length + 1, // Dodajemy 1 do liczby dni, żeby pomieścić przycisk
               itemBuilder: (context, index) {
-                final day = days[index];
-                return Container(
-                  margin: const EdgeInsets.all(8.0),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.blueAccent, width: 2.0),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: ListTile(
-                    title: Center(
-                      child: Text(
-                        'Data dodania: ${_formatDate(day['date'])}',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AddMealScreen(
-                            date: day['date'],
+                if (index < days.length) {
+                  final day = days[index];
+                  return FutureBuilder<Map<String, double>>(
+                    future: _fetchMealsDataForDay(day['date']),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+                      if (snapshot.hasError) {
+                        return Center(child: Text('Błąd ładowania danych'));
+                      }
+                      final data = snapshot.data ?? {
+                        'calories': 0.0,
+                        'protein': 0.0,
+                        'carbs': 0.0,
+                        'fats': 0.0,
+                      };
+                      return Container(
+                        margin: const EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.blueAccent, width: 2.0),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: ListTile(
+                          title: Center(
+                            child: Column(
+                              children: [
+                                Text(
+                                  _formatDate(day['date']),
+                                  style: TextStyle(fontWeight: FontWeight.bold), // Data pogrubiona
+                                ),
+                                Text(
+                                  'Kalorie: ${_formatValue(data['calories']!)}/${calorieRequirement.toInt()} kcal\n'
+                                      'Białko: ${_formatValue(data['protein']!)}/${protein.toInt()} g\n'
+                                      'Węglowodany: ${_formatValue(data['carbs']!)}/${carbs.toInt()} g\n'
+                                      'Tłuszcze: ${_formatValue(data['fats']!)}/${fats.toInt()} g',
+                                  style: TextStyle(fontWeight: FontWeight.normal, fontSize: 14), // Normalna czcionka
+                                ),
+                              ],
+                            ),
                           ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AddMealScreen(
+                                  date: day['date'], // Przekazanie istniejącej daty
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       );
+
                     },
-                  ),
-                );
+                  );
+                } else {
+                  return Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: ElevatedButton(
+                      onPressed: _addDay,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueAccent, // Kolor tła
+                        foregroundColor: Colors.white, // Kolor tekstu
+                      ),
+                      child: Text('Dodaj dzień'),
+                    ),
+                  );
+                }
               },
             ),
           ),
@@ -207,7 +265,7 @@ class _DietaScreenState extends State<DietaScreen> {
                   ],
                 ),
                 Column(
-                  children: [
+                  children:    [
                     Text(
                       'Tłuszcze',
                       style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),

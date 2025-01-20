@@ -4,7 +4,6 @@ import 'package:fitness1945/services/database_service.dart'; // Importuj usług�
 import 'package:fitness1945/models/exercise.model.dart'; // Importuj model ćwiczenia
 import 'add_excersise_screen.dart'; // Importuj ekran dodawania ćwiczenia
 import 'package:fitness1945/screens/add_excersise_screen.dart';
-
 import 'edit_excersise_screen.dart'; // Importuj ekran edytowania ćwiczenia
 
 class ExcersisesScreen extends StatefulWidget {
@@ -127,20 +126,22 @@ class _ExcersisesScreenState extends State<ExcersisesScreen> {
               return ListTile(
                 title: Text(exercise.name),
                 subtitle: Text('${exercise.sets} serie, ${exercise.reps} powtórzeń, ${exercise.weight} ${exercise.weightUnit}'),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.edit),
-                      onPressed: () {
-                        _editExercise(exercise);
-                      },
+                trailing: PopupMenuButton<String>(
+                  onSelected: (String value) {
+                    if (value == 'edit') {
+                      _editExercise(exercise);
+                    } else if (value == 'delete') {
+                      _confirmDeleteExercise(exercise);
+                    }
+                  },
+                  itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                    PopupMenuItem<String>(
+                      value: 'edit',
+                      child: Text('Edytuj'),
                     ),
-                    IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () {
-                        _confirmDeleteExercise(exercise);
-                      },
+                    PopupMenuItem<String>(
+                      value: 'delete',
+                      child: Text('Usuń'),
                     ),
                   ],
                 ),
@@ -165,16 +166,33 @@ class _ExcersisesScreenState extends State<ExcersisesScreen> {
                       ),
                     );
                   },
-                  child: Text('Poradnik do ćwiczeń'),
+                  child: Text(
+                    'Poradnik do ćwiczeń',
+                    style: TextStyle(
+                      fontSize: 20, // Większy rozmiar czcionki
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white, // Kolor napisu na biało
+                    ),
+                  ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFADD8E6),
+                    backgroundColor: Colors.greenAccent,
+                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20), // Powiększenie przycisku
+                    textStyle: TextStyle(
+                      fontSize: 20, // Większy rozmiar czcionki
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
+
                 FloatingActionButton(
                   onPressed: _addExercise,
-                  child: Icon(Icons.add),
-                  backgroundColor: Color(0xFFEADDFF),
+                  child: Icon(
+                    Icons.add,
+                    color: Colors.white, // Kolor plusa na biało
+                  ),
+                  backgroundColor: Colors.greenAccent,
                 ),
+
               ],
             ),
           ),
