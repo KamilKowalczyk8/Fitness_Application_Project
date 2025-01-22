@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'MealFormScreen.dart'; // Importuj ekran formularza posiłku
-import 'package:fitness1945/DietaScreen/services_dieta/database_helper_dieta.dart';
 import 'package:fitness1945/DietaScreen/services_dieta/database_helper_day.dart';
 
 class AddMealScreen extends StatefulWidget {
@@ -27,20 +26,25 @@ class _AddMealScreenState extends State<AddMealScreen> {
   @override
   void initState() {
     super.initState();
-    _loadPersonData();
+    _loadDayData();
     _fetchMealsForDay();
   }
 
-  Future<void> _loadPersonData() async {
-    final db = await DatabaseHelperDieta.instance.database;
-    final List<Map<String, dynamic>> persons = await db.query('person');
-    if (persons.isNotEmpty) {
-      final person = persons.first;
+  Future<void> _loadDayData() async {
+    final db = await DatabaseHelperDay.instance.database;
+    final List<Map<String, dynamic>> days = await db.query(
+      'days',
+      where: 'date = ?',
+      whereArgs: [widget.date],
+    );
+
+    if (days.isNotEmpty) {
+      final day = days.first;
       setState(() {
-        calorieRequirement = person['calorieRequirement'] ?? 2000.0;
-        protein = person['protein'] ?? 150.0;
-        carbs = person['carbs'] ?? 250.0;
-        fats = person['fats'] ?? 70.0;
+        calorieRequirement = day['calorieRequirement'] ?? 2000.0;
+        protein = day['protein'] ?? 150.0;
+        carbs = day['carbs'] ?? 250.0;
+        fats = day['fats'] ?? 70.0;
       });
     }
   }
@@ -90,6 +94,11 @@ class _AddMealScreenState extends State<AddMealScreen> {
     }
   }
 
+  Future<void> _deleteMeal(int id) async {
+    await DatabaseHelperDay.instance.deleteMeal(id);
+    _fetchMealsForDay(); // Odśwież listę posiłków po usunięciu
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,22 +108,34 @@ class _AddMealScreenState extends State<AddMealScreen> {
         children: [
           Expanded(
             child: ListView.builder(
-              itemCount: meals.length + 1, // Zwiększ liczbę elementów o 1
+              itemCount: meals.length + 1,
               itemBuilder: (context, index) {
                 if (index < meals.length) {
                   final meal = meals[index];
-                  return Container(
-                    margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.black38, width: 2.0),
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
-                    child: ListTile(
-                      title: Text('${meal['mealType']} (${meal['mealWeight']}g)'),
-                      subtitle: Text(
-                        'Pora posiłku: ${meal['mealTime']}\nKalorie: ${meal['calories']} kcal, Węglowodany: ${meal['carbs']} g, Białko: ${meal['protein']} g, Tłuszcz: ${meal['fat']} g',
+                  return Stack(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black38, width: 2.0),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: ListTile(
+                          title: Text('${meal['mealType']} (${meal['mealWeight']}g)'),
+                          subtitle: Text(
+                            'Pora posiłku: ${meal['mealTime']}\nKalorie: ${meal['calories']} kcal, Węglowodany: ${meal['carbs']} g, Białko: ${meal['protein']} g, Tłuszcz: ${meal['fat']} g',
+                          ),
+                        ),
                       ),
-                    ),
+                      Positioned(
+                        right: 8,
+                        top: 8,
+                        child: IconButton(
+                          icon: Icon(Icons.delete, color: Colors.red),
+                          onPressed: () => _deleteMeal(meal['id']),
+                        ),
+                      ),
+                    ],
                   );
                 } else {
                   return Padding(
@@ -123,8 +144,8 @@ class _AddMealScreenState extends State<AddMealScreen> {
                       child: ElevatedButton(
                         onPressed: _navigateToMealForm,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blueAccent, // Kolor tła
-                          foregroundColor: Colors.white, // Kolor tekstu
+                          backgroundColor: Colors.blueAccent,
+                          foregroundColor: Colors.white,
                         ),
                         child: Text('Dodaj Posiłek'),
                       ),

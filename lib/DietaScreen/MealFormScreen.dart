@@ -13,7 +13,7 @@ class MealFormScreen extends StatefulWidget {
 
 class _MealFormScreenState extends State<MealFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  String mealTime = 'Śniadanie'; // Domyślna wartość
+  String mealTime = 'Śniadanie';
   String mealWeight = '';
   String mealType = '';
   final List<String> mealTimes = [
@@ -24,7 +24,7 @@ class _MealFormScreenState extends State<MealFormScreen> {
     'Przekąska',
     'Kolacja',
   ];
-  List<String> mealTypes = []; // Lista rodzajów jedzenia z bazy danych
+  List<String> mealTypes = [];
   double calculatedCalories = 0;
   double calculatedCarbs = 0;
   double calculatedProtein = 0;
@@ -38,10 +38,12 @@ class _MealFormScreenState extends State<MealFormScreen> {
 
   void _loadMealTypes() async {
     List<String> types = await DatabaseHelperFood.instance.getFoodNames();
+    print('Loaded meal types: $types'); // Debugging output
     setState(() {
       mealTypes = types;
     });
   }
+
 
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
@@ -67,7 +69,7 @@ class _MealFormScreenState extends State<MealFormScreen> {
         SnackBar(content: Text('Posiłek dodany: $mealType, $mealWeight g, $mealTime')),
       );
 
-      Navigator.pop(context, true); // Powrót do poprzedniego ekranu
+      Navigator.pop(context, true);
     }
   }
 
@@ -185,16 +187,11 @@ class _MealFormScreenState extends State<MealFormScreen> {
               ElevatedButton(
                 onPressed: _submitForm,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueAccent, // Kolor tła
-                  foregroundColor: Colors.white, // Kolor tekstu
+                  backgroundColor: Colors.blueAccent,
+                  foregroundColor: Colors.white,
                 ),
                 child: Text('Zapisz Posiłek'),
               ),
-              SizedBox(height: 20),
-              Text('Kalorie: ${calculatedCalories.toStringAsFixed(2)} kcal'),
-              Text('Węglowodany: ${calculatedCarbs.toStringAsFixed(2)} g'),
-              Text('Białko: ${calculatedProtein.toStringAsFixed(2)} g'),
-              Text('Tłuszcz: ${calculatedFat.toStringAsFixed(2)} g'),
             ],
           ),
         ),

@@ -66,6 +66,15 @@ class DatabaseHelperDieta {
     return await db.update('person', person, where: 'id = ?', whereArgs: [id]);
   }
 
+  Future<void> deletePerson(int id) async {
+    final db = await instance.database;
+    await db.delete(
+      'person',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
   Future close() async {
     final db = await instance.database;
     db.close();

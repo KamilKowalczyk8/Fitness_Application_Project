@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'PersonScreen.dart';
-import 'services_dieta/database_helper_dieta.dart';
-import 'services_dieta/database_helper_day.dart';
-import 'AddMealScreen.dart';
+import 'services_dieta/database_helper_dieta.dart' as dbDietaHelper;
+import 'services_dieta/database_helper_day.dart' as dbDayHelper;
+import 'AddMealScreen.dart' as addMealScreen;
 import 'package:intl/intl.dart';
 
 class DietaScreen extends StatefulWidget {
@@ -11,10 +11,10 @@ class DietaScreen extends StatefulWidget {
 }
 
 class _DietaScreenState extends State<DietaScreen> {
-  double calorieRequirement = 0.0; // Domyślne wartości
-  double protein = 0.0; // Domyślne wartości
-  double carbs = 0.0; // Domyślne wartości
-  double fats = 0.0; // Domyślne wartości
+  double calorieRequirement = 0.0;
+  double protein = 0.0;
+  double carbs = 0.0;
+  double fats = 0.0;
   List<Map<String, dynamic>> days = [];
 
   @override
@@ -25,7 +25,7 @@ class _DietaScreenState extends State<DietaScreen> {
   }
 
   Future<void> _loadPersonData() async {
-    final db = await DatabaseHelperDieta.instance.database;
+    final db = await dbDietaHelper.DatabaseHelperDieta.instance.database;
     final List<Map<String, dynamic>> persons = await db.query('person');
     if (persons.isNotEmpty) {
       final person = persons.first;
@@ -39,7 +39,7 @@ class _DietaScreenState extends State<DietaScreen> {
   }
 
   Future<void> _fetchDays() async {
-    final db = await DatabaseHelperDay.instance.database;
+    final db = await dbDayHelper.DatabaseHelperDay.instance.database;
     final List<Map<String, dynamic>> fetchedDays = await db.query('days');
 
     setState(() {
@@ -48,8 +48,10 @@ class _DietaScreenState extends State<DietaScreen> {
   }
 
   void _addDay() async {
-    final db = await DatabaseHelperDay.instance.database;
+    final db = await dbDayHelper.DatabaseHelperDay.instance.database;
     final today = DateTime.now().toIso8601String().split('T').first;
+
+    // Sprawdź, czy dzień już istnieje
     final List<Map<String, dynamic>> existingDays = await db.query(
       'days',
       where: 'date LIKE ?',
@@ -57,12 +59,29 @@ class _DietaScreenState extends State<DietaScreen> {
     );
 
     if (existingDays.isEmpty) {
-      final newDay = {'date': DateTime.now().toIso8601String()};
-      await db.insert('days', newDay);
+      // Pobierz aktualne dane osoby
+      final dbPerson = await dbDietaHelper.DatabaseHelperDieta.instance.database;
+      final List<Map<String, dynamic>> persons = await dbPerson.query('person');
+      if (persons.isNotEmpty) {
+        final person = persons.first;
 
-      setState(() {
-        days.add(newDay);
-      });
+        final newDay = {
+          'date': DateTime.now().toIso8601String(),
+          'calorieRequirement': person['calorieRequirement'],
+          'protein': person['protein'],
+          'carbs': person['carbs'],
+          'fats': person['fats'],
+        };
+        await db.insert('days', newDay);
+
+        setState(() {
+          days.add(newDay);
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Brak danych użytkownika. Uzupełnij informacje w profilu.')),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Posiłek na ten dzień już został dodany!')),
@@ -76,11 +95,11 @@ class _DietaScreenState extends State<DietaScreen> {
   }
 
   String _formatValue(double value) {
-    return value.toStringAsFixed(1); // Formatuje wartość do jednego miejsca po przecinku
+    return value.toStringAsFixed(1);
   }
 
   Future<Map<String, double>> _fetchMealsDataForDay(String date) async {
-    final meals = await DatabaseHelperDay.instance.getMealsForDay(date);
+    final meals = await dbDayHelper.DatabaseHelperDay.instance.getMealsForDay(date);
     double consumedCalories = 0.0;
     double consumedProtein = 0.0;
     double consumedCarbs = 0.0;
@@ -106,12 +125,12 @@ class _DietaScreenState extends State<DietaScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Diety'),
-        centerTitle: true, // Wyśrodkowanie tytułu
+        centerTitle: true,
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 16.0, bottom: 8.0), // Przesunięcie ikonki
+            padding: const EdgeInsets.only(right: 16.0, bottom: 8.0),
             child: IconButton(
-              icon: Icon(Icons.person, size: 36.0), // Zwiększony rozmiar ikonki
+              icon: Icon(Icons.person, size: 36.0),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -132,7 +151,7 @@ class _DietaScreenState extends State<DietaScreen> {
                           'fats': fats,
                         };
 
-                        final db = await DatabaseHelperDieta.instance.database;
+                        final db = await dbDietaHelper.DatabaseHelperDieta.instance.database;
                         await db.update('person', person);
                       },
                     ),
@@ -148,10 +167,17 @@ class _DietaScreenState extends State<DietaScreen> {
         children: [
           Expanded(
             child: ListView.builder(
-              itemCount: days.length + 1, // Dodajemy 1 do liczby dni, żeby pomieścić przycisk
+              itemCount: days.length + 1,
               itemBuilder: (context, index) {
                 if (index < days.length) {
                   final day = days[index];
+
+                  // Pobierz wartości celów dla danego dnia z bazy danych
+                  final dayCalorieRequirement = day['calorieRequirement'] ?? calorieRequirement;
+                  final dayProtein = day['protein'] ?? protein;
+                  final dayCarbs = day['carbs'] ?? carbs;
+                  final dayFats = day['fats'] ?? fats;
+
                   return FutureBuilder<Map<String, double>>(
                     future: _fetchMealsDataForDay(day['date']),
                     builder: (context, snapshot) {
@@ -179,14 +205,14 @@ class _DietaScreenState extends State<DietaScreen> {
                               children: [
                                 Text(
                                   _formatDate(day['date']),
-                                  style: TextStyle(fontWeight: FontWeight.bold), // Data pogrubiona
+                                  style: TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 Text(
-                                  'Kalorie: ${_formatValue(data['calories']!)}/${calorieRequirement.toInt()} kcal\n'
-                                      'Białko: ${_formatValue(data['protein']!)}/${protein.toInt()} g\n'
-                                      'Węglowodany: ${_formatValue(data['carbs']!)}/${carbs.toInt()} g\n'
-                                      'Tłuszcze: ${_formatValue(data['fats']!)}/${fats.toInt()} g',
-                                  style: TextStyle(fontWeight: FontWeight.normal, fontSize: 14), // Normalna czcionka
+                                  'Kalorie: ${_formatValue(data['calories']!)}/${dayCalorieRequirement.toInt()} kcal\n'
+                                      'Białko: ${_formatValue(data['protein']!)}/${dayProtein.toInt()} g\n'
+                                      'Węglowodany: ${_formatValue(data['carbs']!)}/${dayCarbs.toInt()} g\n'
+                                      'Tłuszcze: ${_formatValue(data['fats']!)}/${dayFats.toInt()} g',
+                                  style: TextStyle(fontWeight: FontWeight.normal, fontSize: 14),
                                 ),
                               ],
                             ),
@@ -195,15 +221,14 @@ class _DietaScreenState extends State<DietaScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => AddMealScreen(
-                                  date: day['date'], // Przekazanie istniejącej daty
+                                builder: (context) => addMealScreen.AddMealScreen(
+                                  date: day['date'],
                                 ),
                               ),
                             );
                           },
                         ),
                       );
-
                     },
                   );
                 } else {
@@ -212,8 +237,8 @@ class _DietaScreenState extends State<DietaScreen> {
                     child: ElevatedButton(
                       onPressed: _addDay,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent, // Kolor tła
-                        foregroundColor: Colors.white, // Kolor tekstu
+                        backgroundColor: Colors.blueAccent,
+                        foregroundColor: Colors.white,
                       ),
                       child: Text('Dodaj dzień'),
                     ),
@@ -265,7 +290,7 @@ class _DietaScreenState extends State<DietaScreen> {
                   ],
                 ),
                 Column(
-                  children:    [
+                  children: [
                     Text(
                       'Tłuszcze',
                       style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),

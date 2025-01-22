@@ -24,22 +24,39 @@ class DatabaseHelperFood {
 
   Future _createDB(Database db, int version) async {
     await db.execute('''
-    CREATE TABLE food (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT,
-      calories REAL,
-      carbs REAL,
-      protein REAL,
-      fat REAL
-    )
+      CREATE TABLE food (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        calories REAL,
+        carbs REAL,
+        protein REAL,
+        fat REAL
+      )
     ''');
 
+    // Dodanie danych do tabeli 'food'
     await db.insert('food', {
       'name': 'Ryż biały',
-      'calories': 13,
-      'carbs': 2.8,
-      'protein': 0.27,
-      'fat': 0.03,
+      'calories': 130,
+      'carbs': 28.0,
+      'protein': 2.7,
+      'fat': 0.3,
+    });
+
+    await db.insert('food', {
+      'name': 'Piers z kurczaka',
+      'calories': 165,
+      'carbs': 0.0,
+      'protein': 31.0,
+      'fat': 3.6,
+    });
+
+    await db.insert('food', {
+      'name': 'Masło orzechowe',
+      'calories': 588,
+      'carbs': 20.0,
+      'protein': 25.0,
+      'fat': 50.0,
     });
   }
 

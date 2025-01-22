@@ -87,6 +87,25 @@ class _PersonScreenState extends State<PersonScreen> {
     double fats = (calorieReq * 0.30) / 9;
 
     widget.onDataUpdated(calorieReq, protein, carbs, fats);
+
+    if (personId != null) {
+      _updatePersonData(calorieReq, protein, carbs, fats);
+    }
+  }
+
+  Future<void> _updatePersonData(double calorieReq, double protein, double carbs, double fats) async {
+    final db = await DatabaseHelperDieta.instance.database;
+    await db.update(
+      'person',
+      {
+        'calorieRequirement': calorieReq,
+        'protein': protein,
+        'carbs': carbs,
+        'fats': fats,
+      },
+      where: 'id = ?',
+      whereArgs: [personId],
+    );
   }
 
   @override

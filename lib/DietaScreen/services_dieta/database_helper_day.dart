@@ -1,5 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'database_helper_dieta.dart' as dbDietaHelper;
 
 class DatabaseHelperDay {
   static final DatabaseHelperDay instance = DatabaseHelperDay._init();
@@ -11,7 +12,7 @@ class DatabaseHelperDay {
   Future<Database> get database async {
     if (_database != null) return _database!;
 
-    _database = await _initDB('days.db');
+    _database = await _initDB('dieta.db');
     return _database!;
   }
 
@@ -19,47 +20,97 @@ class DatabaseHelperDay {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    return await openDatabase(path, version: 1, onCreate: _createDB);
+    return await openDatabase(
+      path,
+      version: 2,
+      onCreate: _createDB,
+      onUpgrade: _onUpgrade,
+    );
   }
 
   Future _createDB(Database db, int version) async {
     await db.execute('''
-    CREATE TABLE days (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      date TEXT NOT NULL,
-      calorieRequirement REAL,
-      protein REAL,
-      carbs REAL,
-      fats REAL
-    )
+      CREATE TABLE IF NOT EXISTS person (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        calorieRequirement REAL,
+        protein REAL,
+        carbs REAL,
+        fats REAL
+      )
     ''');
 
     await db.execute('''
-    CREATE TABLE meals (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      dayId INTEGER,
-      mealTime TEXT,
-      mealWeight TEXT,
-      mealType TEXT,
-      calories REAL,
-      carbs REAL,
-      protein REAL,
-      fat REAL,
-      FOREIGN KEY (dayId) REFERENCES days (id) ON DELETE CASCADE
-    )
+      CREATE TABLE IF NOT EXISTS days (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        date TEXT NOT NULL,
+        calorieRequirement REAL,
+        protein REAL,
+        carbs REAL,
+        fats REAL
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS meals (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        dayId INTEGER,
+        mealTime TEXT,
+        mealWeight TEXT,
+        mealType TEXT,
+        calories REAL,
+        carbs REAL,
+        protein REAL,
+        fat REAL,
+        FOREIGN KEY (dayId) REFERENCES days (id) ON DELETE CASCADE
+      )
     ''');
   }
 
-  Future<int> addMeal(Map<String, dynamic> meal) async {
+  Future _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      // Dodajemy nowe kolumny do tabeli 'days'
+      await db.execute("ALTER TABLE days ADD COLUMN calorieRequirement REAL;");
+      await db.execute("ALTER TABLE days ADD COLUMN protein REAL;");
+      await db.execute("ALTER TABLE days ADD COLUMN carbs REAL;");
+      await db.execute("ALTER TABLE days ADD COLUMN fats REAL;");
+    }
+  }
+
+  Future<int> addDay(Map<String, dynamic> dayData) async {
     final db = await instance.database;
-    return await db.insert('meals', meal);
+
+    final personData = await db.query('person');
+    if (personData.isNotEmpty) {
+      final person = personData.first;
+      dayData['calorieRequirement'] = person['calorieRequirement'];
+      dayData['protein'] = person['protein'];
+      dayData['carbs'] = person['carbs'];
+      dayData['fats'] = person['fats'];
+    }
+
+    final existingDays = await db.query(
+      'days',
+      where: 'date = ?',
+      whereArgs: [dayData['date']],
+    );
+
+    if (existingDays.isNotEmpty) {
+      return (existingDays.first['id'] as int?) ?? 0;
+    }
+
+    return await db.insert('days', dayData);
+  }
+
+  Future<List<Map<String, dynamic>>> getDays() async {
+    final db = await instance.database;
+    return await db.query('days');
   }
 
   Future<List<Map<String, dynamic>>> getMealsForDay(String date) async {
     final db = await instance.database;
     final List<Map<String, dynamic>> days = await db.query(
       'days',
-      where: 'date LIKE ?',
+      where: 'date = ?',
       whereArgs: [date],
     );
 
@@ -74,11 +125,39 @@ class DatabaseHelperDay {
     return [];
   }
 
+  Future<int> addMeal(Map<String, dynamic> meal) async {
+    final db = await instance.database;
+    return await db.insert('meals', meal);
+  }
+
+  Future<void> deleteMeal(int id) async {
+    final db = await instance.database;
+    await db.delete(
+      'meals',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
   Future<void> updateExistingRecords() async {
     final db = await instance.database;
-    await db.rawUpdate('''
-    UPDATE days SET calorieRequirement = 2000.0, protein = 150.0, carbs = 250.0, fats = 70.0 WHERE calorieRequirement IS NULL;
-    ''');
+    final personData = await db.query('person');
+    if (personData.isNotEmpty) {
+      final person = personData.first;
+      await db.rawUpdate('''
+        UPDATE days SET
+          calorieRequirement = ?,
+          protein = ?,
+          carbs = ?,
+          fats = ?
+        WHERE calorieRequirement IS NULL;
+      ''', [
+        person['calorieRequirement'],
+        person['protein'],
+        person['carbs'],
+        person['fats']
+      ]);
+    }
   }
 
   Future close() async {
