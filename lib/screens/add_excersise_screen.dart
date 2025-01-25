@@ -62,13 +62,13 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
             ),
             ElevatedButton(
               onPressed: () async {
-                // Logowanie wartości przed zapisaniem
+               
                 print('Nazwa ćwiczenia: ${_nameController.text}');
                 print('Ilość serii: ${_setsController.text}');
                 print('Ilość powtórzeń: ${_repsController.text}');
                 print('Obciążenie: ${_weightController.text} $_weightUnit');
 
-                // Tworzenie obiektu ćwiczenia
+               
                 final newExercise = Exercise(
                   name: _nameController.text,
                   sets: int.parse(_setsController.text),
@@ -78,23 +78,23 @@ class _AddExerciseScreenState extends State<AddExerciseScreen> {
                   trainingId: widget.trainingId,
                 );
 
-                // Zapisz ćwiczenie w bazie danych
+               
                 await _saveExercise(newExercise);
 
-                // Powrót do poprzedniego ekranu z wynikiem true
+               
                 Navigator.pop(context, true);
               },
               child: Text(
                 'Dodaj',
                 style: TextStyle(
-                  fontSize: 20, // Większy rozmiar czcionki
-                  fontWeight: FontWeight.bold, // Pogrubienie tekstu
-                  color: Colors.white, // Kolor napisu na biało
+                  fontSize: 20, 
+                  fontWeight: FontWeight.bold, 
+                  color: Colors.white, 
                 ),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.greenAccent,
-                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20), // Powiększenie przycisku
+                padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20), 
               ),
             )
           ],
