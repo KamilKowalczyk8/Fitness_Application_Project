@@ -51,7 +51,6 @@ class _DietaScreenState extends State<DietaScreen> {
     final db = await dbDayHelper.DatabaseHelperDay.instance.database;
     final today = DateTime.now().toIso8601String().split('T').first;
 
-    // Sprawdź, czy dzień już istnieje
     final List<Map<String, dynamic>> existingDays = await db.query(
       'days',
       where: 'date LIKE ?',
@@ -59,7 +58,6 @@ class _DietaScreenState extends State<DietaScreen> {
     );
 
     if (existingDays.isEmpty) {
-      // Pobierz aktualne dane osoby
       final dbPerson = await dbDietaHelper.DatabaseHelperDieta.instance.database;
       final List<Map<String, dynamic>> persons = await dbPerson.query('person');
       if (persons.isNotEmpty) {
@@ -172,7 +170,6 @@ class _DietaScreenState extends State<DietaScreen> {
                 if (index < days.length) {
                   final day = days[index];
 
-                  // Pobierz wartości celów dla danego dnia z bazy danych
                   final dayCalorieRequirement = day['calorieRequirement'] ?? calorieRequirement;
                   final dayProtein = day['protein'] ?? protein;
                   final dayCarbs = day['carbs'] ?? carbs;
