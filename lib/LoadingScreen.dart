@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/HomeScreen.dart'; // Importuj `HomeScreen`
+import 'screens/HomeScreen.dart';
 
 class LoadingScreen extends StatefulWidget {
   @override
@@ -14,7 +14,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
   }
 
   _navigateToHomeScreen() async {
-    await Future.delayed(Duration(seconds: 3), () {}); // Symulacja opóźnienia ładowania
+    await Future.delayed(Duration(seconds: 3), () {}); 
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => HomeScreen()),
@@ -24,12 +24,12 @@ class _LoadingScreenState extends State<LoadingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Dostosuj kolor tła
+      backgroundColor: Colors.white, /
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('assets/loading_screen.png'),// Twoja niestandardowa grafika
+            Image.asset('assets/loading_screen.png'),
             SizedBox(height: 20),
             CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(Colors.blueAccent),
