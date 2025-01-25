@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:fitness1945/screens/exercise_tutorial_screen.dart'; // Poprawny import
-import 'package:fitness1945/services/database_service.dart'; // Importuj usługę bazy danych
-import 'package:fitness1945/models/exercise.model.dart'; // Importuj model ćwiczenia
-import 'add_excersise_screen.dart'; // Importuj ekran dodawania ćwiczenia
+import 'package:fitness1945/screens/exercise_tutorial_screen.dart'; 
+import 'package:fitness1945/services/database_service.dart'; 
+import 'package:fitness1945/models/exercise.model.dart'; 
+import 'add_excersise_screen.dart'; 
 import 'package:fitness1945/screens/add_excersise_screen.dart';
-import 'edit_excersise_screen.dart'; // Importuj ekran edytowania ćwiczenia
+import 'edit_excersise_screen.dart'; 
 
 class ExcersisesScreen extends StatefulWidget {
   final int trainingId;
@@ -21,7 +21,7 @@ class _ExcersisesScreenState extends State<ExcersisesScreen> {
   @override
   void initState() {
     super.initState();
-    _exercises = _loadExercises(); // Załaduj ćwiczenia z bazy danych
+    _exercises = _loadExercises(); 
   }
 
   Future<List<Exercise>> _loadExercises() async {
@@ -169,16 +169,16 @@ class _ExcersisesScreenState extends State<ExcersisesScreen> {
                   child: Text(
                     'Poradnik do ćwiczeń',
                     style: TextStyle(
-                      fontSize: 20, // Większy rozmiar czcionki
+                      fontSize: 20, 
                       fontWeight: FontWeight.bold,
-                      color: Colors.white, // Kolor napisu na biało
+                      color: Colors.white, 
                     ),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.greenAccent,
-                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20), // Powiększenie przycisku
+                    padding: EdgeInsets.symmetric(horizontal: 50, vertical: 20), 
                     textStyle: TextStyle(
-                      fontSize: 20, // Większy rozmiar czcionki
+                      fontSize: 20, 
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -188,7 +188,7 @@ class _ExcersisesScreenState extends State<ExcersisesScreen> {
                   onPressed: _addExercise,
                   child: Icon(
                     Icons.add,
-                    color: Colors.white, // Kolor plusa na biało
+                    color: Colors.white, 
                   ),
                   backgroundColor: Colors.greenAccent,
                 ),
