@@ -12,7 +12,7 @@ class HomeScreen extends StatelessWidget {
         title: Text(
           'Wybierz',
           style: TextStyle(
-            fontSize: 24, // Zwiększony rozmiar czcionki
+            fontSize: 24, 
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -27,20 +27,20 @@ class HomeScreen extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.only(top: 0),
                   child: SizedBox(
-                    width: 200, // Szerokość przycisków
-                    height: 60, // Wysokość przycisków
+                    width: 200, 
+                    height: 60, 
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent, // Kolor tła przycisku
-                        foregroundColor: Colors.white, // Kolor tekstu
+                        backgroundColor: Colors.blueAccent, 
+                        foregroundColor: Colors.white, 
                         textStyle: TextStyle(
-                          fontSize: 24, // Zwiększony rozmiar czcionki
-                          fontWeight: FontWeight.bold, // Pogrubienie tekstu
+                          fontSize: 24, 
+                          fontWeight: FontWeight.bold, 
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15), // Zaokrąglone rogi
+                          borderRadius: BorderRadius.circular(15), 
                         ),
-                        elevation: 5, // Cieniowanie
+                        elevation: 5, 
                       ),
                       onPressed: () {
                         Navigator.push(
@@ -59,16 +59,16 @@ class HomeScreen extends StatelessWidget {
                     height: 60,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.greenAccent, // Kolor tła przycisku
-                        foregroundColor: Colors.white, // Kolor tekstu
+                        backgroundColor: Colors.greenAccent, 
+                        foregroundColor: Colors.white, 
                         textStyle: TextStyle(
-                          fontSize: 24, // Zwiększony rozmiar czcionki
-                          fontWeight: FontWeight.bold, // Pogrubienie tekstu
+                          fontSize: 24, 
+                          fontWeight: FontWeight.bold, 
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15), // Zaokrąglone rogi
+                          borderRadius: BorderRadius.circular(15), 
                         ),
-                        elevation: 5, // Cieniowanie
+                        elevation: 5, 
                       ),
                       onPressed: () {
                         Navigator.push(
@@ -87,16 +87,16 @@ class HomeScreen extends StatelessWidget {
                     height: 60,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.orangeAccent, // Kolor tła przycisku
-                        foregroundColor: Colors.white, // Kolor tekstu
+                        backgroundColor: Colors.orangeAccent, 
+                        foregroundColor: Colors.white, 
                         textStyle: TextStyle(
-                          fontSize: 24, // Zwiększony rozmiar czcionki
-                          fontWeight: FontWeight.bold, // Pogrubienie tekstu
+                          fontSize: 24, 
+                          fontWeight: FontWeight.bold, 
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15), // Zaokrąglone rogi
+                          borderRadius: BorderRadius.circular(15), 
                         ),
-                        elevation: 5, // Cieniowanie
+                        elevation: 5, 
                       ),
                       onPressed: () {
                         Navigator.push(
@@ -115,16 +115,16 @@ class HomeScreen extends StatelessWidget {
                     height: 60,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.purpleAccent, // Kolor tła przycisku
-                        foregroundColor: Colors.white, // Kolor tekstu
+                        backgroundColor: Colors.purpleAccent, 
+                        foregroundColor: Colors.white, 
                         textStyle: TextStyle(
-                          fontSize: 24, // Zwiększony rozmiar czcionki
-                          fontWeight: FontWeight.bold, // Pogrubienie tekstu
+                          fontSize: 24, 
+                          fontWeight: FontWeight.bold, 
                         ),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15), // Zaokrąglone rogi
+                          borderRadius: BorderRadius.circular(15), 
                         ),
-                        elevation: 5, // Cieniowanie
+                        elevation: 5, 
                       ),
                       onPressed: () {
                         Navigator.push(
