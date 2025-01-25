@@ -25,7 +25,7 @@ class DatabaseService {
       onOpen: (db) async {
         var result = await db.rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name='exercise'");
         if (result.isEmpty) {
-          await _createDB(db, 2); // Utwórz tabelę, jeśli nie istnieje
+          await _createDB(db, 2); 
         }
       },
     );
