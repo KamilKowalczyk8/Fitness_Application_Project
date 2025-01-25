@@ -7,7 +7,7 @@ class ExerciseTutorialScreen extends StatefulWidget {
 }
 
 class _ExerciseTutorialScreenState extends State<ExerciseTutorialScreen> {
-  // Lista ćwiczeń z linkami do filmów
+  
   final List<Map<String, String>> exercises = [
     {
       'name': 'Wyciskanie sztangi',
@@ -23,14 +23,14 @@ class _ExerciseTutorialScreenState extends State<ExerciseTutorialScreen> {
     },
   ];
 
-  // Zmienna przechowująca aktualnie wybrane ćwiczenie
+ 
   String? selectedExercise;
 
-  // Funkcja uruchamiająca link
+  
   Future<void> _launchURL(String videoUrl) async {
     final Uri url = Uri.parse(videoUrl);
     try {
-      // Spróbuj uruchomić link z aplikacji zewnętrznej (np. przeglądarki)
+      
       if (await canLaunch(url.toString())) {
         await launch(url.toString(), forceSafariVC: false, forceWebView: false);
       } else {
@@ -50,7 +50,7 @@ class _ExerciseTutorialScreenState extends State<ExerciseTutorialScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Rozwijana lista wyboru ćwiczenia
+            
             DropdownButton<String>(
               value: selectedExercise,
               hint: Text('Wybierz ćwiczenie'),
@@ -67,13 +67,13 @@ class _ExerciseTutorialScreenState extends State<ExerciseTutorialScreen> {
               }).toList(),
             ),
             SizedBox(height: 20),
-            // Przycisk uruchamiający film
+            
             if (selectedExercise != null)
               ElevatedButton(
                 onPressed: () {
                   final exercise = exercises.firstWhere(
                           (element) => element['name'] == selectedExercise);
-                  _launchURL(exercise['videoUrl']!); // Uruchomienie odpowiedniego filmu
+                  _launchURL(exercise['videoUrl']!); 
                 },
                 child: Text('Zobacz film'),
               ),
