@@ -49,7 +49,6 @@ class _MealFormScreenState extends State<MealFormScreen> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      // Oblicz wartości odżywcze
       await _calculateNutritionValues();
 
       final meal = {
