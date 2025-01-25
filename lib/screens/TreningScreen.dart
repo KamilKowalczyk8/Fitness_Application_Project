@@ -4,8 +4,8 @@ import 'package:fitness1945/screens/excersises_screen.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:fitness1945/models/trening.model.dart';
 import 'package:fitness1945/services/database_service.dart';
-import 'package:path/path.dart' as p; // Użyj aliasu dla importu path
-import 'package:intl/intl.dart';  // Dodaj import intl
+import 'package:path/path.dart' as p; 
+import 'package:intl/intl.dart'; 
 
 class TreningScreen extends StatefulWidget {
   @override
@@ -23,7 +23,7 @@ class _TreningScreenState extends State<TreningScreen> {
 
   Future<void> deleteDatabaseFile() async {
     final dbPath = await getDatabasesPath();
-    final path = p.join(dbPath, 'fitness.db'); // Użyj aliasu p.join
+    final path = p.join(dbPath, 'fitness.db'); 
     await deleteDatabase(path);
   }
 
@@ -44,33 +44,33 @@ class _TreningScreenState extends State<TreningScreen> {
       where: 'id = ?',
       whereArgs: [id],
     );
-    _loadTreningi(); // Odśwież listę po usunięciu
+    _loadTreningi(); 
   }
 
-  // Formatowanie daty (godzina: minuta)
+  
   String _formatDate(String date) {
     final dateTime = DateTime.parse(date);
-    final format = DateFormat('yyyy-MM-dd   HH:mm'); // Możesz dostosować format
+    final format = DateFormat('yyyy-MM-dd   HH:mm'); 
     return format.format(dateTime);
   }
 
   void _confirmDeleteTrening(int id) {
     showDialog(
-      context: context, // Poprawne użycie BuildContext
+      context: context, 
       builder: (context) => AlertDialog(
         title: Text('Usunięcie treningu'),
         content: Text('Czy na pewno chcesz usunąć ten trening?'),
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context); // Zamknij okno dialogowe
+              Navigator.pop(context); 
             },
             child: Text('Anuluj'),
           ),
           TextButton(
             onPressed: () {
-              _deleteTrening(id); // Usuń trening
-              Navigator.pop(context); // Zamknij okno dialogowe
+              _deleteTrening(id); 
+              Navigator.pop(context); 
             },
             child: Text('Usuń'),
           ),
@@ -111,7 +111,7 @@ class _TreningScreenState extends State<TreningScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(trening.description),
-                        Text('Utworzono: ${_formatDate(trening.date)}'), // Formatowanie daty
+                        Text('Utworzono: ${_formatDate(trening.date)}'), 
                       ],
                     ),
                     trailing: PopupMenuButton<String>(
@@ -148,9 +148,9 @@ class _TreningScreenState extends State<TreningScreen> {
         },
         child: Icon(
           Icons.add,
-          color: Colors.white, // Kolor plusa na biało
+          color: Colors.white, 
         ),
-        backgroundColor: Colors.greenAccent, // Kolor tła
+        backgroundColor: Colors.greenAccent, 
       ),
     );
   }
