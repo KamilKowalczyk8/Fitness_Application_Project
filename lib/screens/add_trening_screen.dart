@@ -52,7 +52,7 @@ class _AddTreningScreenState extends State<AddTreningScreen> {
                       },
                     );
 
-                    Navigator.pop(context, true); // Powrót z wynikiem true
+                    Navigator.pop(context, true); 
                   }
                 },
                 child: Text('Dodaj'),
