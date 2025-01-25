@@ -15,7 +15,7 @@ class _EditExerciseScreenState extends State<EditExerciseScreen> {
   late TextEditingController _nameController;
   late TextEditingController _setsController;
   late TextEditingController _repsController;
-  late TextEditingController _weightController; // Dodajemy kontroler dla wagi
+  late TextEditingController _weightController; 
 
   @override
   void initState() {
@@ -83,14 +83,14 @@ class _EditExerciseScreenState extends State<EditExerciseScreen> {
               keyboardType: TextInputType.number,
             ),
             TextField(
-              controller: _weightController, // Pole dla wagi
+              controller: _weightController, 
               decoration: InputDecoration(labelText: 'Waga'),
               keyboardType: TextInputType.number,
             ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                _updateExercise(); // Zaktualizuj ćwiczenie
+                _updateExercise(); 
               },
               child: Text('Zapisz'),
             ),
