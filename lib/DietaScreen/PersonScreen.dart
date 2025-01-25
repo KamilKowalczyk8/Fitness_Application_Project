@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'services_dieta/database_helper_dieta.dart'; // Importuj DatabaseHelperDieta
+import 'services_dieta/database_helper_dieta.dart'; 
 
 class PersonScreen extends StatefulWidget {
   final Function(double, double, double, double) onDataUpdated;
