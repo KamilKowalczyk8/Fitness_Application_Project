@@ -23,7 +23,7 @@ class _EditExerciseScreenState extends State<EditExerciseScreen> {
     _nameController = TextEditingController(text: widget.exercise.name);
     _setsController = TextEditingController(text: widget.exercise.sets.toString());
     _repsController = TextEditingController(text: widget.exercise.reps.toString());
-    _weightController = TextEditingController(text: widget.exercise.weight.toString()); // Inicjalizujemy kontroler dla wagi
+    _weightController = TextEditingController(text: widget.exercise.weight.toString()); 
   }
 
   @override
@@ -31,20 +31,20 @@ class _EditExerciseScreenState extends State<EditExerciseScreen> {
     _nameController.dispose();
     _setsController.dispose();
     _repsController.dispose();
-    _weightController.dispose(); // Zwalniamy kontroler dla wagi
+    _weightController.dispose();
     super.dispose();
   }
 
-  // Funkcja do zapisywania zaktualizowanego ćwiczenia w bazie danych
+  
   Future<void> _updateExercise() async {
     final updatedExercise = Exercise(
       id: widget.exercise.id,
       name: _nameController.text,
       sets: int.parse(_setsController.text),
       reps: int.parse(_repsController.text),
-      weight: double.parse(_weightController.text), // Dodajemy wagę
+      weight: double.parse(_weightController.text), 
       trainingId: widget.exercise.trainingId,
-      weightUnit: widget.exercise.weightUnit, // Dodajemy jednostkę wagi
+      weightUnit: widget.exercise.weightUnit, 
     );
 
     final db = await DatabaseService.instance.database;
@@ -56,7 +56,7 @@ class _EditExerciseScreenState extends State<EditExerciseScreen> {
       whereArgs: [updatedExercise.id],
     );
 
-    // Po zapisaniu zmiany, wracamy do poprzedniego ekranu
+    
     Navigator.pop(context);
   }
 
