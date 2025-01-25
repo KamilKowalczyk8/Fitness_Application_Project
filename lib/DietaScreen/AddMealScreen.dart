@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'MealFormScreen.dart'; // Importuj ekran formularza posiłku
+import 'MealFormScreen.dart'; 
 import 'package:fitness1945/DietaScreen/services_dieta/database_helper_day.dart';
 
 class AddMealScreen extends StatefulWidget {
@@ -96,7 +96,7 @@ class _AddMealScreenState extends State<AddMealScreen> {
 
   Future<void> _deleteMeal(int id) async {
     await DatabaseHelperDay.instance.deleteMeal(id);
-    _fetchMealsForDay(); // Odśwież listę posiłków po usunięciu
+    _fetchMealsForDay(); 
   }
 
   @override
