@@ -69,12 +69,12 @@ class _HealthScreenState extends State<HealthScreen> {
                 var data = cityDataList[index]['data'];
 
                 if (data is String || data == null) {
-                  return SizedBox.shrink(); // Invisible, stops scrolling
+                  return SizedBox.shrink(); 
                 } else if (data is Map) {
                   var aqiStr = data?['aqi']?.toString() ?? '0';
 
                   if (!RegExp(r'^[0-9]+$').hasMatch(aqiStr)) {
-                    return SizedBox.shrink(); // Invisible, stops scrolling
+                    return SizedBox.shrink(); 
                   }
 
                   int aqi = int.tryParse(aqiStr) ?? 0;
@@ -90,7 +90,7 @@ class _HealthScreenState extends State<HealthScreen> {
                     subtitle: Text('AQI: $aqi'),
                   );
                 } else {
-                  return SizedBox.shrink(); // Invisible, stops scrolling
+                  return SizedBox.shrink(); 
                 }
               },
             );
