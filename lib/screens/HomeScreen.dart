@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../DietaScreen/DietaScreen.dart';
-import '../CoachScreens/CoachMainScreen.dart';
+import '../CoachScreens/screensCoach/CoachMainScreen.dart';
 import 'TreningScreen.dart';
 import '../HealthScreens/HealthScreen.dart';
 
@@ -12,7 +12,7 @@ class HomeScreen extends StatelessWidget {
         title: Text(
           'Wybierz',
           style: TextStyle(
-            fontSize: 24, 
+            fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -20,126 +20,42 @@ class HomeScreen extends StatelessWidget {
       ),
       body: Center(
         child: SingleChildScrollView(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(top: 0),
-                  child: SizedBox(
-                    width: 200, 
-                    height: 60, 
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent, 
-                        foregroundColor: Colors.white, 
-                        textStyle: TextStyle(
-                          fontSize: 24, 
-                          fontWeight: FontWeight.bold, 
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15), 
-                        ),
-                        elevation: 5, 
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => DietaScreen()),
-                        );
-                      },
-                      child: Text('Dieta'),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 20),
-                  child: SizedBox(
-                    width: 200,
-                    height: 60,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.greenAccent, 
-                        foregroundColor: Colors.white, 
-                        textStyle: TextStyle(
-                          fontSize: 24, 
-                          fontWeight: FontWeight.bold, 
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15), 
-                        ),
-                        elevation: 5, 
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => TreningScreen()),
-                        );
-                      },
-                      child: Text('Trening'),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 20),
-                  child: SizedBox(
-                    width: 200,
-                    height: 60,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.orangeAccent, 
-                        foregroundColor: Colors.white, 
-                        textStyle: TextStyle(
-                          fontSize: 24, 
-                          fontWeight: FontWeight.bold, 
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15), 
-                        ),
-                        elevation: 5, 
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => HealthScreen()),
-                        );
-                      },
-                      child: Text('Zdrowie'),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 20),
-                  child: SizedBox(
-                    width: 200,
-                    height: 60,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.purpleAccent, 
-                        foregroundColor: Colors.white, 
-                        textStyle: TextStyle(
-                          fontSize: 24, 
-                          fontWeight: FontWeight.bold, 
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15), 
-                        ),
-                        elevation: 5, 
-                      ),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => CoachMainScreen()),
-                        );
-                      },
-                      child: Text('Trenerzy'),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildButton(context, 'Dieta', Colors.blueAccent, DietaScreen()),
+              SizedBox(height: 20),
+              _buildButton(context, 'Trening', Colors.greenAccent, TreningScreen()),
+              SizedBox(height: 20),
+              _buildButton(context, 'Zdrowie', Colors.orangeAccent, HealthScreen()),
+              SizedBox(height: 20),
+              _buildButton(context, 'Trenerzy', Colors.purpleAccent, CoachMainScreen()),
+            ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildButton(BuildContext context, String text, Color color, Widget destination) {
+    return SizedBox(
+      width: 200,
+      height: 60,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          foregroundColor: Colors.white,
+          textStyle: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          elevation: 5,
+        ),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => destination),
+          );
+        },
+        child: Text(text),
       ),
     );
   }

@@ -82,7 +82,7 @@ class _DietaScreenState extends State<DietaScreen> {
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Posiłek na ten dzień już został dodany!')),
+        SnackBar(content: Text('Dzisiejszy dzień został już stworzony!')),
       );
     }
   }
@@ -161,7 +161,6 @@ class _DietaScreenState extends State<DietaScreen> {
         ],
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Expanded(
             child: ListView.builder(
@@ -169,7 +168,6 @@ class _DietaScreenState extends State<DietaScreen> {
               itemBuilder: (context, index) {
                 if (index < days.length) {
                   final day = days[index];
-
                   final dayCalorieRequirement = day['calorieRequirement'] ?? calorieRequirement;
                   final dayProtein = day['protein'] ?? protein;
                   final dayCarbs = day['carbs'] ?? carbs;
@@ -209,7 +207,7 @@ class _DietaScreenState extends State<DietaScreen> {
                                       'Białko: ${_formatValue(data['protein']!)}/${dayProtein.toInt()} g\n'
                                       'Węglowodany: ${_formatValue(data['carbs']!)}/${dayCarbs.toInt()} g\n'
                                       'Tłuszcze: ${_formatValue(data['fats']!)}/${dayFats.toInt()} g',
-                                  style: TextStyle(fontWeight: FontWeight.normal, fontSize: 14),
+                                  style: TextStyle(fontSize: 14),
                                 ),
                               ],
                             ),
@@ -218,9 +216,7 @@ class _DietaScreenState extends State<DietaScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => addMealScreen.AddMealScreen(
-                                  date: day['date'],
-                                ),
+                                builder: (context) => addMealScreen.AddMealScreen(date: day['date']),
                               ),
                             );
                           },
@@ -250,59 +246,24 @@ class _DietaScreenState extends State<DietaScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Column(
-                  children: [
-                    Text(
-                      'Kalorie',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      '${calorieRequirement.toInt()} kcal',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Text(
-                      'Białko',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      '${protein.toInt()} g',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Text(
-                      'Węglowodany',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      '${carbs.toInt()} g',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Text(
-                      'Tłuszcze',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      '${fats.toInt()} g',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
+                _buildNutritionInfo('Kalorie', '${calorieRequirement.toInt()} kcal'),
+                _buildNutritionInfo('Białko', '${protein.toInt()} g'),
+                _buildNutritionInfo('Węglowodany', '${carbs.toInt()} g'),
+                _buildNutritionInfo('Tłuszcze', '${fats.toInt()} g'),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildNutritionInfo(String label, String value) {
+    return Column(
+      children: [
+        Text(label, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        Text(value, style: TextStyle(color: Colors.white)),
+      ],
     );
   }
 }
